@@ -1,18 +1,24 @@
 {
   "dependencies": {
+    "body-parser": "^1.20.1",
     "express": "^4.18.2",
     "express-handlebars": "^6.0.6",
     "express-session": "^1.17.3",
-    "express-validators": "^1.0.4"
+    "express-validators": "^1.0.4",
+    "helpers": "^0.0.6",
+    "mongoose": "^6.7.3"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "run": "nodemon server.js"
   },
   "name": "project",
   "version": "1.0.0",
   "main": "server.js",
-  "devDependencies": {},
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
 }
