@@ -79,7 +79,8 @@ mongoose.connect(database.url + dbName).then(
                 if (err)
                     res.send(err);
 
-                res.json(data);
+                //res.json(data);
+                res.render('insertRestaurant', { title: 'Restaurant' , layout:'main.hbs'});
             });
         })
 
