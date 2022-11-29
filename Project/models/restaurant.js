@@ -10,10 +10,15 @@ RestaurantSchema = new Schema({
     },
     borough: String,
     cuisine: String,
-    grades: Array,
+    grades: [
+        {
+            date : Date,
+            grade : String,
+            score : Number
+        }
+    ],
     name: String,
-    restaurant_id: String,
-    image: String
+    restaurant_id: String
 });
 module.exports = mongoose.model('restaurants', RestaurantSchema);
 
