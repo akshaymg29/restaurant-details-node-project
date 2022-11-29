@@ -84,6 +84,7 @@ mongoose.connect(database.url + dbName).then(
             });
         })
 
+
         // get a restaurants with _id
         app.get('/api/restaurants/:_id', function (req, res) {
             let id = req.params._id;
@@ -134,6 +135,10 @@ mongoose.connect(database.url + dbName).then(
                 else
                     res.send('Successfully! Restaurant has been Deleted.');
             });
+        });
+
+        app.get('/insertRestaurant', function (req, res) {
+            res.render('insertRestaurant', { title: 'Enter Restaurant Details' , layout:'main.hbs'});
         });
 
         app.listen(port, hostname);
