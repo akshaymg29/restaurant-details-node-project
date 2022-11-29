@@ -2,7 +2,12 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 RestaurantSchema = new Schema({
-    address: Object,
+    address: {
+        building: String,
+        coord: [Number],
+        street: String,
+        zipcode: String
+    },
     borough: String,
     cuisine: String,
     grades: Array,
@@ -10,5 +15,5 @@ RestaurantSchema = new Schema({
     restaurant_id: String,
     image: String
 });
-module.exports = mongoose.model('sample_restaurant', RestaurantSchema);
+module.exports = mongoose.model('restaurants', RestaurantSchema);
 

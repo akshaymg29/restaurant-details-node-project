@@ -1,3 +1,3 @@
 module.exports = {
-    url : "mongodb+srv://admin:admin@cluster0.58yexb6.mongodb.net/sample_restaurants"
+    url : "mongodb+srv://admin:admin@mongocluster.suafl9f.mongodb.net/"
 };

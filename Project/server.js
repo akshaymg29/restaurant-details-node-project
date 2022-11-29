@@ -1,20 +1,23 @@
 var express  = require('express');
-
+require('dotenv').config();
 var path = require('path');
 var mongoose = require('mongoose');
 var app      = express();
 const exphbs = require('express-handlebars');
 var database = require('./config/database');
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
+
+const hostname = process.env.HOST;
+const dbName = process.env.DATABASE;
  
 var port     = process.env.PORT || 8000;
 app.use(bodyParser.urlencoded({'extended':'true'}));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
+console.log(database.url+dbName);
+mongoose.connect(database.url+dbName);
 
-mongoose.connect(database.url);
-
-var Book = require('./models/restaurant');
+var Restaurant = require('./models/restaurant');
 
 
 //HandleBar 
@@ -41,9 +44,61 @@ app.get('/', function(req, res) {
 });
 
 
-app.get('/getAllRestaurant', function(req, res) {
-    res.render('getAllRestaurant', { title: 'Restaurant' ,layout:'main.hbs'});
+app.get('/api/restaurants', function(req, res) {
+    // use mongoose to get all restaurants in the database
+	Restaurant.find(function(err, restaurants) {
+		// if there is an error retrieving, send the error otherwise send data
+		if (err)
+			res.send(err)
+		res.json(restaurants); // return all employees in JSON format
+        //res.render('getAllRestaurant', { title: 'Restaurant' , data:restaurants, layout:'main.hbs'});
+	});
 });
 
-app.listen(port);
+app.post('/api/restaurants', function(req, res){
+    // create mongose method to create a new record into collection
+    console.log(req.body);
+
+	Restaurant.create({
+		name : req.body.name,
+		salary : req.body.salary,
+		age : req.body.age
+	}, function(err, restaurant) {
+		if (err)
+			res.send(err);
+ 
+		// get and return all the restaurants after newly created restaurant record
+		Restaurant.find(function(err, restaurants) {
+			if (err)
+				res.send(err)
+			res.json(employees);
+		});
+	});
+})
+
+// get a restaurants with _id
+app.get('/api/restaurants/:_id', function(req, res) {
+	let id = req.params._id;
+	Restaurant.findById(id, function(err, restaurant) {
+		if (err)
+			res.send(err)
+ 
+		res.json(restaurant);
+	});
+ 
+});
+
+// delete a restaurant by id
+app.delete('/api/restaurants/:_id', function(req, res) {
+	let id = req.params._id;
+    console.log(id);
+	Restaurant.remove({_id : id}, function(err) {
+		if (err)
+			res.send(err);
+		else
+			res.send('Successfully! Restaurant has been Deleted.');	
+	});
+});
+
+app.listen(port, hostname);
 console.log("App listening on port : " + port);
