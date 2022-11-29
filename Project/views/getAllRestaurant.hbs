@@ -1,4 +1,47 @@
  <section>
-<h1>hello</h1>
+
+<h1>Dhruv Patel</h1>
+
+<title>{{title}}</title>
+<h3>List of Books</h3>
+
+<table border="1">
+
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Grades</th>
+        <th>Cuisine</th>
+        <th>Borough</th>
+        {{!-- <th>Long Description</th>
+        <th>Status</th>
+        <th>Authors</th>
+        <th>Categories</th> --}}
+    </tr>
+
+        
+    {{#each restaurants}}
+    
+    <tr>
+        
+        <td>{{this.restaurant_id}}</td>
+        <td>{{this.name}}</td>
+        <td>{{this.address}}</td>
+        <td>{{this.grades}}</td>
+        <td>{{this.cuisine}}</td>
+        <td>{{this.borough}}</td>
+        {{!-- <td>{{}}</td>
+        <td>{{status}}</td>
+        <td>{{authors}}</td>
+        <td>{{categories}}</td>    --}}
+
+    </tr>
+    
+    {{/each}}
+    
+
+
+</table>
 
 </section><!-- End Hero Section -->

@@ -50,8 +50,8 @@ app.get('/api/restaurants', function(req, res) {
 		// if there is an error retrieving, send the error otherwise send data
 		if (err)
 			res.send(err)
-		res.json(restaurants); // return all employees in JSON format
-        //res.render('getAllRestaurant', { title: 'Restaurant' , data:restaurants, layout:'main.hbs'});
+		//res.json(restaurants); // return all employees in JSON format
+        res.render('getAllRestaurant', { title: 'Restaurant' , data:restaurants, layout:'main.hbs'});
 	});
 });
 
