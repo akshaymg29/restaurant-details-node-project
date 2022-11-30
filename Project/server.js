@@ -65,21 +65,23 @@ mongoose.connect(database.url + dbName).then(
 
         app.post('/api/restaurants', function (req, res) {
             // create mongose method to create a new record into collection
+
+            let zip = req.body.zipcode;
+
+            let zip1 = convert.zipConvert(zip)
+
+            var JSONData = zip1.replace('[','').replace(']','').split(',').map(x => x.trim())
+            console.log(JSONData.toString());
+            var y = parseFloat(JSONData[0].toString());
+            var x = parseFloat(JSONData[1].toString());
+
             console.log(req.body);
-
-            let zip = req.body.coord;
-
-            let data1 = convert.zipConvert(zip)
-
-            let data2 = data1.toString();
-
-            var JSONData = data2.replace('[','').replace(']','').split(',').map(x => x.trim());
-
 
             var data = {
                 address: {
                     building: req.body.building,
                     street: req.body.street,
+                    coord:[x,y],
                     zipcode: req.body.zipcode
                     
                 },
