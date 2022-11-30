@@ -69,7 +69,7 @@ mongoose.connect(database.url + dbName).then(
             let zip = req.body.zipcode;
 
             let zip1 = convert.zipConvert(zip)
-            
+
             var JSONData = zip1.replace('[','').replace(']','').split(',').map(x => x.trim())
             
             console.log(JSONData.toString());
@@ -172,6 +172,15 @@ mongoose.connect(database.url + dbName).then(
         app.get('/insertRestaurant', function (req, res) {
             res.render('insertRestaurant', { title: 'Enter Restaurant Details' , layout:'main.hbs'});
         });
+
+        app.get('/updateRestaurant', function (req, res) {
+            res.render('updateRestaurant', { title: 'Update Restaurant' , layout:'main.hbs'});
+        });
+
+        app.get('/deleteRestaurant', function (req, res) {
+            res.render('deleteRestaurant', { title: 'Delete Restaurant' , layout:'main.hbs'});
+        });
+
 
         app.listen(port, hostname);
         console.log("App listening on port : " + port);

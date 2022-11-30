@@ -1,0 +1,57 @@
+    <section id="book-a-table" class="book-a-table">
+    <div class="form-body">
+        <div class="row">
+            <div class="form-holder">
+                <div class="form-content">
+                    <div class="form-items">
+                        <h3>Update Restaurant</h3>
+                        <p>Fill in the data below.</p>
+                        <form action="/api/restaurants" method="post">
+
+                            <div class="col-md-12">
+                            <input class="form-control" type="text" name="restaurant_id" placeholder="Restaurant Id" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="name" placeholder="Restaurant Name" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="cuisine" placeholder="Cuisine" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="borough" placeholder="Borough" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="building" placeholder="Building" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="street" placeholder="Street" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="zipcode" placeholder="Zip Code" required>
+                            </div>
+                            </br>
+                            <div class="col-md-12">
+                                <input class="form-control" type="date" name="date" placeholder="Date" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="grade" placeholder="grade" required>
+                            </div>
+                            <div class="col-md-12">
+                                <input class="form-control" type="text" name="score" placeholder="Score" required>
+                            </div>
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required>
+                        <label class="form-check-label">I confirm that all data are correct</label>
+                        </div>
+
+                            <div class="form-button mt-3">
+                                <button id="submit" type="submit" class="btn btn-primary">Register</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
