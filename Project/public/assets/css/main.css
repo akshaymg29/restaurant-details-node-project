@@ -1309,6 +1309,15 @@ section {
   border-radius: 50px;
 }
 
+.button-create-insert {
+  background: #ec2727;
+  border: 0;
+  padding: 14px 60px;
+  color: #fff;
+  transition: 0.4s;
+  border-radius: 50px;
+}
+
 .book-a-table .php-email-form button[type=submit]:hover {
   background: #ec2727;
 }

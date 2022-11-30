@@ -7,6 +7,11 @@ const exphbs = require('express-handlebars');
 var database = require('./config/database');
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
 
+var lodash = require('lodash');
+
+
+let convert = require('convert-zip-to-gps');
+
 const hostname = process.env.HOST;
 const dbName = process.env.DATABASE;
 
@@ -62,25 +67,43 @@ mongoose.connect(database.url + dbName).then(
             // create mongose method to create a new record into collection
             console.log(req.body);
 
+            let zip = req.body.coord;
+
+            let data1 = convert.zipConvert(zip)
+
+            let data2 = data1.toString();
+
+            var JSONData = data2.replace('[','').replace(']','').split(',').map(x => x.trim());
+
+
             var data = {
                 address: {
                     building: req.body.building,
-                    coord: req.body.coord,
                     street: req.body.street,
                     zipcode: req.body.zipcode
+                    
                 },
                 borough: req.body.borough,
                 cuisine: req.body.cuisine,
-                grades: req.body.grades,
+                grades: [
+                    {
+                        date: req.body.date,
+                        grade: req.body.grade,
+                        score: req.body.score
+                    }
+                ],
                 name: req.body.name,
                 restaurant_id: req.body.restaurant_id,
             }
+
+
+
             Restaurant.create(data, function (err, restaurant) {
                 if (err)
                     res.send(err);
 
-                //res.json(data);
-                res.render('insertRestaurant', { title: 'Restaurant' , layout:'main.hbs'});
+                res.json(data);
+                //res.render('index', { title: 'Restaurant' , layout:'main.hbs'});
             });
         })
 
@@ -112,7 +135,13 @@ mongoose.connect(database.url + dbName).then(
                 },
                 borough: req.body.borough,
                 cuisine: req.body.cuisine,
-                grades: req.body.grades,
+                grades: [
+                    {
+                        date: req.body.date,
+                        grade: req.body.grade,
+                        score: req.body.score
+                    }
+                ],
                 name: req.body.name,
                 restaurant_id: req.body.restaurant_id,
             }
