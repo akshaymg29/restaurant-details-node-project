@@ -69,8 +69,9 @@ mongoose.connect(database.url + dbName).then(
             let zip = req.body.zipcode;
 
             let zip1 = convert.zipConvert(zip)
-
+            
             var JSONData = zip1.replace('[','').replace(']','').split(',').map(x => x.trim())
+            
             console.log(JSONData.toString());
             var y = parseFloat(JSONData[0].toString());
             var x = parseFloat(JSONData[1].toString());
