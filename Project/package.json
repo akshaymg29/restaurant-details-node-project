@@ -9,6 +9,7 @@
     "express-validators": "^1.0.4",
     "geo2zip": "^4.0.1",
     "helpers": "^0.0.6",
+    "loadsh": "^0.0.4",
     "mongoose": "^6.7.3"
   },
   "scripts": {
