@@ -215,6 +215,12 @@ mongoose.connect(mongoConnectString + dbName).then(
             //res.redirect('/api/restaurants/:_id')
         });
 
+        app.get('/login', function (req, res) {
+            res.render('login', { title: 'Login' , layout:'main.hbs'});
+            //res.redirect('/api/restaurants/:_id')
+        });
+
+
 
         app.listen(port, hostname);
         console.log("App listening on port : " + port);
