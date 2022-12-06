@@ -3,6 +3,7 @@ require('dotenv').config({path: __dirname+'/.env'});
 var path = require('path');
 var mongoose = require('mongoose');
 var app = express();
+const jwt=require('jsonwebtoken');
 const exphbs = require('express-handlebars');
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
 
@@ -71,14 +72,16 @@ mongoose.connect(mongoConnectString + dbName).then(
            
 
          app.get('/api/restaurants', function (req, res) {
-             // use mongoose to get 0all restaurants in the database
+             // use mongoose to get all restaurants in the database
              if((!req.query.page || !req.query.perPage)) 
-                res.status(500).json({message: "Missing query parameters"})
+                res.status(400).json({message: "Missing query parameters"})
              else {
              getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
                  .then((data) => {
-                     if(data.length === 0) res.status(204).json({message: "No data returned"});
-                     else res.render('getAllRestaurant', { title: 'ALL Restaurant', data:data, layout:'main1.hbs'});
+                     if(data.length === 0)
+                        res.status(204).json({message: "No data returned"});
+                     else 
+                        res.status(200).render('getAllRestaurant', { title: 'ALL Restaurant', data:data, layout:'main1.hbs'});
                  })
                  .catch((err) => { res.status(500).json({error: err}) })
           }
@@ -124,10 +127,10 @@ mongoose.connect(mongoConnectString + dbName).then(
 
             Restaurant.create(data).then(
                 ()=> {
-                    res.json(data);
+                    res.status(201).json(data);
                 },
                 (err) => {
-                    res.send(err);
+                    res.status(500).send(err);
                 }
             );             
                 //res.render('index', { title: 'Restaurant' , layout:'main.hbs'});
@@ -178,7 +181,7 @@ mongoose.connect(mongoConnectString + dbName).then(
                 (restaurant) => {
                     //res.render('updateRestaurant',{Restaurant:restaurant});
 
-                res.send('Successfully! Restaurant updated - ' + restaurant.name);
+                res.status(201).send('Restaurant updated successfully - ' + restaurant.name);
                 },
                 (err) => {
                     res.send(err);
@@ -192,10 +195,10 @@ mongoose.connect(mongoConnectString + dbName).then(
 
             Restaurant.findByIdAndDelete(req.params._id).then(
                 ()=> {
-                    res.send('Successfully! Restaurant has been Deleted.')
+                    res.status(204).send('Successfully! Restaurant has been Deleted.')
                 },
                 (err)=> {
-                    res.send(err);
+                    res.status(500).send(err);
                 }
             )
         });
@@ -215,6 +218,45 @@ mongoose.connect(mongoConnectString + dbName).then(
             //res.redirect('/api/restaurants/:_id')
         });
 
+        app.post('/login', (req,res)=>{
+            console.log(req)
+            //Authenticated Userconst 
+            username = req.body.username
+            if(username===process.env.USER && req.body.password === process.env.PASS) {
+                const user = { name : username}
+                const accessToken = jwt.sign(user, process.env.SECRETKEY)
+                res.json({ accessToken : accessToken})
+            }
+            else {
+                res.status(500).send("Error in username and password");
+            }
+        })
+
+        function verifyToken(req,res,next){
+            const bearerHeadr = req.headers['authorization']
+            if(typeof bearerHeadr != 'undefined'){
+                const bearer = bearerHeadr.split(' ')
+                const bearerToken = bearer[1]
+                req.token = bearerToken
+                next()
+            }
+        }
+        
+        app.get('/posts',verifyToken,(req,res) =>{
+            jwt.verify(req.token, process.env.SECRETKEY, (err, decoded)=> {
+                if (err)
+                    res.sendStatus(403)
+                else{
+                    console.log(decoded)
+                    res.send("Successful")
+                }
+            });
+        })
+
+
+        app.all('*', function(req, res){
+            res.send('Page not found', 404);
+          });
 
         app.listen(port, hostname);
         console.log("App listening on port : " + port);
