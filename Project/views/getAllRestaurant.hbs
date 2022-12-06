@@ -3,6 +3,24 @@
 <h1>Dhruv Patel</h1>
 
 <title>{{title}}</title>
+
+<form method="get">
+
+    <div class="col-md-12">
+        <input class="form-control" type="number" name="page" placeholder="Page Number" required>
+    </div>
+    <div class="col-md-12">
+        <input class="form-control" type="number" name="perPage" placeholder="per Page items" required>
+    </div>
+    <div class="col-md-12">
+        <input class="form-control" type="text" name="borough" placeholder="Borough" required>
+    </div>
+    <div class="form-button mt-3">
+        <button id="submit" type="submit" class="btn btn-primary">Filter Data</button>
+    </div>
+
+</form>
+
 <h3>List of Books</h3>
 
 <table border="1">
@@ -14,10 +32,6 @@
         <th>Grades</th>
         <th>Cuisine</th>
         <th>Borough</th>
-        {{!-- <th>Long Description</th>
-        <th>Status</th>
-        <th>Authors</th>
-        <th>Categories</th> --}}
     </tr>
 
         
@@ -31,10 +45,7 @@
         <td>{{this.grades}}</td>
         <td>{{this.cuisine}}</td>
         <td>{{this.borough}}</td>
-        {{!-- <td>{{}}</td>
-        <td>{{status}}</td>
-        <td>{{authors}}</td>
-        <td>{{categories}}</td>    --}}
+
 
     </tr>
     
