@@ -8,8 +8,7 @@ RestaurantSchema = new Schema({
             {
                 0:Number,
                 1:Number
-            }
-            
+            }  
         ,
         street: String,
         zipcode: String
@@ -26,5 +25,5 @@ RestaurantSchema = new Schema({
     name: String,
     restaurant_id: String
 });
-module.exports = mongoose.model('restaurants', RestaurantSchema);
 
+module.exports = mongoose.model('restaurants', RestaurantSchema);
