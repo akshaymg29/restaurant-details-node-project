@@ -4,7 +4,6 @@ var path = require('path');
 var mongoose = require('mongoose');
 var app = express();
 const exphbs = require('express-handlebars');
-var database = require('./config/database');
 var bodyParser = require('body-parser');         // pull information from HTML POST (express4)
 
 var lodash = require('lodash');
@@ -21,13 +20,10 @@ app.use(bodyParser.urlencoded({ 'extended': 'true' }));            // parse appl
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 
-var isDBError = false;
-mongoose.connect(database.url + dbName).then(
+mongoose.connect(mongoConnectString + dbName).then(
     () => {
 
-
         var Restaurant = require('./models/restaurant');
-
 
         //HandleBar 
         //------------------------------------------------------
