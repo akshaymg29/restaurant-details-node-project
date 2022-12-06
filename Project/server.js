@@ -20,10 +20,13 @@ app.use(bodyParser.urlencoded({ 'extended': 'true' }));            // parse appl
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 
+var isDBError = false;
 mongoose.connect(mongoConnectString + dbName).then(
     () => {
 
+
         var Restaurant = require('./models/restaurant');
+
 
         //HandleBar 
         //------------------------------------------------------
@@ -48,17 +51,80 @@ mongoose.connect(mongoConnectString + dbName).then(
             res.render('index', { title: 'Restaurant', layout: 'main.hbs' });
         });
 
+        async function paginatedResults(page, perPage, borough) {
+            return await Restaurant.find()
+                                .sort({restaurant_id : 'asc'})
+                                .skip((page-1)*perPage)
+                                .limit(perPage)
+                                .exec();
+
+        }   
+        function getAllRestaurants(page, perPage, borough) { 
+            let findBy = borough ? { borough } : {};
+        
+            if(+page && +perPage){
+                return Restaurant.find(findBy).skip((page - 1) * +perPage).limit(+perPage).exec();
+            }
+            
+            return Promise.reject(new Error('page and perPage query parameters must be valid numbers'));
+        };
+           
 
         app.get('/api/restaurants', function (req, res) {
-            // use mongoose to get all restaurants in the database
-            Restaurant.find(function (err, restaurants) {
+            // use mongoose to get 0all restaurants in the database
+            if((!req.query.page || !req.query.perPage)) 
+                res.status(500).json({message: "Missing query parameters"})
+            else {
+                getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
+                .then((data) => {
+                    if(data.length === 0) res.status(204).json({message: "No data returned"});
+                    else res.status(201).json(data);
+                })
+                .catch((err) => { res.status(500).json({error: err}) })
+            }
+
+
+        //     let findBy = req.query.borough ? { borough: req.query.borough } : {};
+
+        // if(req.query.page && req.query.perPage){
+        //     var result = Restaurant.find(findBy).sort({restaurant_id: +1}).skip((req.query.page - 1) * req.query.perPage).limit(req.query.perPage).exec();
+        //     res.json(result);
+        // }
+            /*Restaurant.find({},{}, { skip: ((req.query.page-1)*req.query.perPage), limit: req.query.perPage }, function (err, restaurants) {
                 // if there is an error retrieving, send the error otherwise send data
                 if (err)
                     res.send(err)
-                //res.json(restaurants); // return all restaurants in JSON format
-                res.render('getAllRestaurant', { title: 'Restaurant' , data:restaurants, layout:'main.hbs'});
-            });
-        });
+                console.log(req.query.page);
+                console.log(req.query.perPage);
+                console.log(req.query.borough);
+                // var rest = Restaurant.find()
+                //             .skip((req.query.page-1)*req.query.perPage)
+                //             .limit(req.query.perPage);
+                //             //.sort()
+                //             //.lean();
+                //             console.log(rest);
+                res.json(restaurants/*paginatedResults(req.query.page, req.query.perPage, req.query.borough)*///); // return all restaurants in JSON format
+                /*res.render('getAllRestaurant', { 
+                    title: 'Restaurant' , 
+                    data:paginatedResults(req.query.page, req.query.perPage, req.query.borough), 
+                    layout:'main.hbs'
+                });*/
+            /*}).sort(['restaurant_id', 1], function (err, restaurants) {
+                // if there is an error retrieving, send the error otherwise send data
+                if (err)
+                    res.send(err)
+                console.log(req.query.page);
+                console.log(req.query.perPage);
+                console.log(req.query.borough);
+                // var rest = Restaurant.find()
+                //             .skip((req.query.page-1)*req.query.perPage)
+                //             .limit(req.query.perPage);
+                //             //.sort()
+                //             //.lean();
+                //             console.log(rest);
+                res.json(restaurants/*paginatedResults(req.query.)*//*);
+        });*/
+    });
 
         app.post('/api/restaurants', function (req, res) {
             // create mongose method to create a new record into collection
@@ -96,28 +162,29 @@ mongoose.connect(mongoConnectString + dbName).then(
                 restaurant_id: req.body.restaurant_id,
             }
 
-
-
-            Restaurant.create(data, function (err, restaurant) {
-                if (err)
+            Restaurant.create(data).then(
+                ()=> {
+                    res.json(data);
+                },
+                (err) => {
                     res.send(err);
-
-                res.json(data);
+                }
+            );             
                 //res.render('index', { title: 'Restaurant' , layout:'main.hbs'});
-            });
-        })
+        });
 
 
         // get a restaurants with _id
         app.get('/api/restaurants/:_id', function (req, res) {
-            let id = req.params._id;
-            Restaurant.findById(id, function (err, restaurant) {
-                if (err)
-                    res.send(err)
 
-                res.json(restaurant);
-            });
-
+            Restaurant.findById(req.params._id).then(
+                (restaurant)=> {
+                    res.json(restaurant);
+                },
+                (err)=> {
+                    res.send(err);
+                }
+            )
         });
 
         // update restaurant and send back restaurant name after updating
@@ -147,23 +214,29 @@ mongoose.connect(mongoConnectString + dbName).then(
             }
 
             // save the Restaurant
-            Restaurant.findByIdAndUpdate(id, data, function (err, restaurant) {
-                if (err) throw err;
+            Restaurant.findByIdAndUpdate(id, data).then(
+                (restaurant) => {
+                    //res.render('updateRestaurant',{Restaurant:restaurant});
 
                 res.send('Successfully! Restaurant updated - ' + restaurant.name);
-            });
+                },
+                (err) => {
+                    res.send(err);
+                }
+            );
         });
 
         // delete a restaurant by id
         app.delete('/api/restaurants/:_id', function (req, res) {
-            let id = req.params._id;
-            console.log(id);
-            Restaurant.remove({ _id: id }, function (err) {
-                if (err)
+
+            Restaurant.findByIdAndDelete(req.params._id).then(
+                ()=> {
+                    res.send('Successfully! Restaurant has been Deleted.')
+                },
+                (err)=> {
                     res.send(err);
-                else
-                    res.send('Successfully! Restaurant has been Deleted.');
-            });
+                }
+            )
         });
 
         app.get('/insertRestaurant', function (req, res) {
