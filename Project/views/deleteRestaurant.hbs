@@ -5,11 +5,11 @@
                 <div class="form-content">
                     <div class="form-items">
                         <h3>Delete Restaurant</h3>
-                        <p>Please enter Restaurant ID</p>
-                        <br action="/api/restaurants" method="post">
+                        <p>Please Confirm again</p>
+                        <form action="/api/restaurants/{{data}}" method="delete">
 
                             <div class="col-md-12">
-                            <input class="form-control" type="text" name="restaurant_id" placeholder="Restaurant Id" required>
+                            <input class="form-control" type="text" name="restaurant_id" placeholder="Restaurant Id" value="{{data}}" required>
                             </div>
 
                         <div class="form-check">
@@ -19,7 +19,7 @@
                         <label class="form-check-label">I confirm that all data are correct</label>
                         </div>
                             <div class="form-button mt-3">
-                                <button id="submit" type="submit" class="btn btn-primary">Register</button>
+                                <button id="submit" type="submit" class="btn btn-primary">Delete</button>
                             </div>
                         </form>
                     </div>
