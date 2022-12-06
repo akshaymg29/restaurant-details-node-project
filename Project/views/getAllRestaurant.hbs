@@ -31,36 +31,20 @@
         <th>Cuisine</th>
         <th>Borough</th>
         <th>Get Restaurant details</th>
-        <th>Update</th>
-        <th>Delete</th>
     </tr>
 
         
     {{#each data}}
     
-    <tr>
-        
+    <tr>  
         <td>{{restaurant_id}}</td>
         <td>{{name}}</td>
         <td>{{cuisine}}</td>
         <td>{{borough}}</td>
         <td><a href="/api/restaurants/{{_id}}">Get Details</a></td>
-        <td><a href="/api/restaurants/{{_id}}">Update</a></td>
-        <td>
-            <a href="/deleteRestaurant/{{_id}}">
-            Delete
-            </a>
-        </td>
-
-        
-
-
     </tr>
     
     {{/each}}
-    
-
-
 </table>
 
 </section><!-- End Hero Section -->

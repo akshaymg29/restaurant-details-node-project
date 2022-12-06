@@ -20,7 +20,6 @@ app.use(bodyParser.urlencoded({ 'extended': 'true' }));            // parse appl
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
 
-var isDBError = false;
 mongoose.connect(mongoConnectString + dbName).then(
     () => {
 
@@ -33,15 +32,16 @@ mongoose.connect(mongoConnectString + dbName).then(
 
         app.use(express.static(path.join(__dirname, 'public')));
 
+        app.engine('.hbs', exphbs.engine({ extname:'.hbs' }));
         //custom handlebar
-        const HBS = exphbs.create({
-        });
+        //const HBS = exphbs.create({
+        //});
 
         //app.engine('.hbs', exphbs.engine({ extname: '.hbs' }));
-        app.engine('.hbs', exphbs.engine({
-            extname: '.hbs',
-            defaultLayout: 'main'
-        }));
+        // app.engine('.hbs', exphbs.engine({
+        //     extname: '.hbs',
+        //     defaultLayout: 'main'
+        // }));
         app.set('view engine', '.hbs');
 
         //-------------------------------------------------------
@@ -78,7 +78,7 @@ mongoose.connect(mongoConnectString + dbName).then(
              getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
                  .then((data) => {
                      if(data.length === 0) res.status(204).json({message: "No data returned"});
-                     else res.render('getAllRestaurant', { title: 'ALL Restaurant', data:data, layout:'main.hbs'});
+                     else res.render('getAllRestaurant', { title: 'ALL Restaurant', data:data, layout:'main1.hbs'});
                  })
                  .catch((err) => { res.status(500).json({error: err}) })
           }
