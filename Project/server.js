@@ -63,7 +63,7 @@ mongoose.connect(mongoConnectString + dbName).then(
         function getAllRestaurants(page, perPage, borough) { 
             let findBy = borough ? { borough } : {};
         
-            if(+page && +perPage){
+            if(page && perPage){
                 return Restaurant.find(findBy).lean().skip((page - 1) * +perPage).limit(+perPage).exec();
             }
             
@@ -76,7 +76,7 @@ mongoose.connect(mongoConnectString + dbName).then(
              if((!req.query.page || !req.query.perPage)) 
                 res.status(400).json({message: "Missing query parameters"})
              else {
-             await getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
+                await getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
                  .then((data) => {
                      if(data.length === 0)
                         res.status(204).json({message: "No data returned"});
@@ -89,48 +89,53 @@ mongoose.connect(mongoConnectString + dbName).then(
 
         app.post('/api/restaurants', verifyToken, function (req, res) {
             // create mongose method to create a new record into collection
+            jwt.verify(req.token, process.env.SECRETKEY, (err, decoded) => {
+                if (err)
+                    res.sendStatus(403)
+                else {
+                    let zip = req.body.zipcode;
 
-            let zip = req.body.zipcode;
+                    let zip1 = convert.zipConvert(zip)
 
-            let zip1 = convert.zipConvert(zip)
-
-            var JSONData = zip1.replace('[' ,'').replace(']','').split(',').map(x => x.trim())
-            
-            console.log(JSONData.toString());
-            var y = parseFloat(JSONData[0].toString());
-            var x = parseFloat(JSONData[1].toString());
-
-            console.log(req.body);
-
-            var data = {
-                address: {
-                    building: req.body.building,
-                    street: req.body.street,
-                    coord:[x,y],
-                    zipcode: req.body.zipcode
+                    var JSONData = zip1.replace('[' ,'').replace(']','').split(',').map(x => x.trim())
                     
-                },
-                borough: req.body.borough,
-                cuisine: req.body.cuisine,
-                grades: [
-                    {
-                        date: req.body.date,
-                        grade: req.body.grade,
-                        score: req.body.score
-                    }
-                ],
-                name: req.body.name,
-                restaurant_id: req.body.restaurant_id,
-            }
+                    console.log(JSONData.toString());
+                    var y = parseFloat(JSONData[0].toString());
+                    var x = parseFloat(JSONData[1].toString());
 
-            Restaurant.create(data).then(
-                ()=> {
-                    res.status(201).json(data);
-                },
-                (err) => {
-                    res.status(500).send(err);
+                    console.log(req.body);
+
+                    var data = {
+                        address: {
+                            building: req.body.building,
+                            street: req.body.street,
+                            coord:[x,y],
+                            zipcode: req.body.zipcode
+                            
+                        },
+                        borough: req.body.borough,
+                        cuisine: req.body.cuisine,
+                        grades: [
+                            {
+                                date: req.body.date,
+                                grade: req.body.grade,
+                                score: req.body.score
+                            }
+                        ],
+                        name: req.body.name,
+                        restaurant_id: req.body.restaurant_id,
+                    }
+
+                    Restaurant.create(data).then(
+                        ()=> {
+                            res.status(201).json(data);
+                        },
+                        (err) => {
+                            res.status(500).send(err);
+                        }
+                    );
                 }
-            );             
+            });           
                 //res.render('index', { title: 'Restaurant' , layout:'main.hbs'});
         });
 
@@ -151,64 +156,79 @@ mongoose.connect(mongoConnectString + dbName).then(
         // update restaurant and send back restaurant name after updating
         app.put('/api/restaurants/:_id', verifyToken, function (req, res) {
             // create mongose method to update an existing record into collection
-            let zip = req.body.zipcode;
-
-            let zip1 = convert.zipConvert(zip)
-
-            var JSONData = zip1.replace('[' ,'').replace(']','').split(',').map(x => x.trim())
             
-            console.log(JSONData.toString());
-            var y = parseFloat(JSONData[0].toString());
-            var x = parseFloat(JSONData[1].toString());
+            jwt.verify(req.token, process.env.SECRETKEY, (err, decoded) => {
+                if (err)
+                    res.sendStatus(403)
+                else {
+                    let zip = req.body.zipcode;
 
-            console.log(req.body);
+                    let zip1 = convert.zipConvert(zip)
 
-            let id = req.params._id;
-            var data = {
-                address: {
-                    building: req.body.building,
-                    coord:[x,y],
-                    street: req.body.street,
-                    zipcode: req.body.zipcode
-                },
-                borough: req.body.borough,
-                cuisine: req.body.cuisine,
-                grades: [
-                    {
-                        date: req.body.date,
-                        grade: req.body.grade,
-                        score: req.body.score
+                    var JSONData = zip1.replace('[' ,'').replace(']','').split(',').map(x => x.trim())
+                    
+                    console.log(JSONData.toString());
+                    var y = parseFloat(JSONData[0].toString());
+                    var x = parseFloat(JSONData[1].toString());
+
+                    console.log(req.body);
+
+                    let id = req.params._id;
+                    var data = {
+                        address: {
+                            building: req.body.building,
+                            coord:[x,y],
+                            street: req.body.street,
+                            zipcode: req.body.zipcode
+                        },
+                        borough: req.body.borough,
+                        cuisine: req.body.cuisine,
+                        grades: [
+                            {
+                                date: req.body.date,
+                                grade: req.body.grade,
+                                score: req.body.score
+                            }
+                        ],
+                        name: req.body.name,
+                        restaurant_id: req.body.restaurant_id,
                     }
-                ],
-                name: req.body.name,
-                restaurant_id: req.body.restaurant_id,
-            }
 
-            // save the Restaurant
-            Restaurant.findByIdAndUpdate(id, data).then(
-                (restaurant) => {
-                    //res.render('updateRestaurant',{Restaurant:restaurant});
+                    // save the Restaurant
+                    Restaurant.findByIdAndUpdate(id, data).then(
+                        (restaurant) => {
+                            //res.render('updateRestaurant',{Restaurant:restaurant});
 
-                res.status(201).send('Restaurant updated successfully for ' + restaurant.name);
-                },
-                (err) => {
-                    res.send(err);
+                        res.status(201).send('Restaurant updated successfully for ' + restaurant.name);
+                        },
+                        (err) => {
+                            res.send(err);
+                        }
+                    );
                 }
-            );
+            });
         });
 
         // delete a restaurant by id
         app.delete('/api/restaurants/:_id', verifyToken, function (req, res) {
-            console.log(req.params._id);
 
-            Restaurant.findByIdAndDelete(req.params._id).then(
-                ()=> {
-                    res.status(204).send('Successfully! Restaurant has been Deleted.')
-                },
-                (err)=> {
-                    res.status(500).send(err);
+            jwt.verify(req.token, process.env.SECRETKEY, (err, decoded)=> {
+                if (err)
+                    res.sendStatus(403)
+                else{
+                    console.log(decoded)
+                    console.log(req.params._id);
+
+                    Restaurant.findByIdAndDelete(req.params._id).then(
+                        ()=> {
+                            res.status(204).send('Successfully! Restaurant has been Deleted.')
+                        },
+                        (err)=> {
+                            res.status(500).send("Id not found hence not able to delete");
+                        }
+                    );
                 }
-            )
+            });
         });
 
 
