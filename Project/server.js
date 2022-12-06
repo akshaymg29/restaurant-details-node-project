@@ -91,12 +91,12 @@ function getAllRestaurants(page, perPage, borough) {
     }
 });
 
-app.post('/api/restaurants', verifyToken, function (req, res) {
+app.post('/api/restaurants', function (req, res) {
     // create mongose method to create a new record into collection
-    jwt.verify(req.token, process.env.SECRETKEY, (err, decoded) => {
+    /*jwt.verify(req.token, process.env.SECRETKEY, (err, decoded) => {
         if (err)
             res.sendStatus(403)
-        else {
+        else {*/
             let zip = req.body.zipcode;
 
             let zip1 = convert.zipConvert(zip)
@@ -138,8 +138,8 @@ app.post('/api/restaurants', verifyToken, function (req, res) {
                     res.status(500).send(err);
                 }
             );
-        }
-    });           
+        //}
+    //});           
         //res.render('index', { title: 'Restaurant' , layout:'main.hbs'});
 });
 
