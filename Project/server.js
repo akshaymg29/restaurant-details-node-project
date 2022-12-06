@@ -20,7 +20,7 @@ var port = process.env.PORT || 8000;
 app.use(bodyParser.urlencoded({ 'extended': 'true' }));            // parse application/x-www-form-urlencoded
 app.use(bodyParser.json());                                     // parse application/json
 app.use(bodyParser.json({ type: 'application/vnd.api+json' })); // parse application/vnd.api+json as json
-
+mongoose.set('strictQuery', true);
 mongoose.connect(mongoConnectString + dbName).then(
     () => {
 
@@ -71,12 +71,12 @@ mongoose.connect(mongoConnectString + dbName).then(
         };
            
 
-         app.get('/api/restaurants', function (req, res) {
+         app.get('/api/restaurants', async function (req, res) {
              // use mongoose to get all restaurants in the database
              if((!req.query.page || !req.query.perPage)) 
                 res.status(400).json({message: "Missing query parameters"})
              else {
-             getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
+             await getAllRestaurants(req.query.page, req.query.perPage, req.query.borough)
                  .then((data) => {
                      if(data.length === 0)
                         res.status(204).json({message: "No data returned"});
@@ -85,11 +85,9 @@ mongoose.connect(mongoConnectString + dbName).then(
                  })
                  .catch((err) => { res.status(500).json({error: err}) })
           }
-
-
     });
 
-        app.post('/api/restaurants', function (req, res) {
+        app.post('/api/restaurants', verifyToken, function (req, res) {
             // create mongose method to create a new record into collection
 
             let zip = req.body.zipcode;
@@ -151,15 +149,25 @@ mongoose.connect(mongoConnectString + dbName).then(
         });
 
         // update restaurant and send back restaurant name after updating
-        app.put('/api/restaurants/:_id', function (req, res) {
+        app.put('/api/restaurants/:_id', verifyToken, function (req, res) {
             // create mongose method to update an existing record into collection
+            let zip = req.body.zipcode;
+
+            let zip1 = convert.zipConvert(zip)
+
+            var JSONData = zip1.replace('[' ,'').replace(']','').split(',').map(x => x.trim())
+            
+            console.log(JSONData.toString());
+            var y = parseFloat(JSONData[0].toString());
+            var x = parseFloat(JSONData[1].toString());
+
             console.log(req.body);
 
             let id = req.params._id;
             var data = {
                 address: {
                     building: req.body.building,
-                    coord: req.body.coord,
+                    coord:[x,y],
                     street: req.body.street,
                     zipcode: req.body.zipcode
                 },
@@ -181,7 +189,7 @@ mongoose.connect(mongoConnectString + dbName).then(
                 (restaurant) => {
                     //res.render('updateRestaurant',{Restaurant:restaurant});
 
-                res.status(201).send('Restaurant updated successfully - ' + restaurant.name);
+                res.status(201).send('Restaurant updated successfully for ' + restaurant.name);
                 },
                 (err) => {
                     res.send(err);
@@ -190,7 +198,7 @@ mongoose.connect(mongoConnectString + dbName).then(
         });
 
         // delete a restaurant by id
-        app.delete('/api/restaurants/:_id', function (req, res) {
+        app.delete('/api/restaurants/:_id', verifyToken, function (req, res) {
             console.log(req.params._id);
 
             Restaurant.findByIdAndDelete(req.params._id).then(
@@ -218,12 +226,17 @@ mongoose.connect(mongoConnectString + dbName).then(
             //res.redirect('/api/restaurants/:_id')
         });
 
-        app.post('/login', (req,res)=>{
+        app.get('/login', function (req, res) {
+            res.render('login', { title: 'Login Details' , layout:'main.hbs'});
+        });
+
+        app.post('/api/login', (req,res)=>{
             console.log(req)
             //Authenticated Userconst 
             username = req.body.username
             if(username===process.env.USER && req.body.password === process.env.PASS) {
-                const user = { name : username}
+                const user = { name : username , 
+                    iss : 'Akshay&Dhruv'}
                 const accessToken = jwt.sign(user, process.env.SECRETKEY)
                 res.json({ accessToken : accessToken})
             }
