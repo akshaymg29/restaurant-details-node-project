@@ -70,7 +70,7 @@ mongoose.connect(database.url + dbName).then(
 
             let zip1 = convert.zipConvert(zip)
 
-            var JSONData = zip1.replace('[','').replace(']','').split(',').map(x => x.trim())
+            var JSONData = zip1.replace('[' ,'').replace(']','').split(',').map(x => x.trim())
             
             console.log(JSONData.toString());
             var y = parseFloat(JSONData[0].toString());
@@ -152,6 +152,8 @@ mongoose.connect(database.url + dbName).then(
             // save the Restaurant
             Restaurant.findByIdAndUpdate(id, data, function (err, restaurant) {
                 if (err) throw err;
+
+                //res.render('updateRestaurant',{Restaurant:restaurant});
 
                 res.send('Successfully! Restaurant updated - ' + restaurant.name);
             });
